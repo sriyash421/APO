@@ -5,7 +5,8 @@ from tonic.tensorflow import agents, updaters, models, normalizers
 from segments import Segment
 
 def default_model(actor_sizes=(64, 64), actor_activation='tanh',
-                  critic_sizes=(64, 64), critic_activation='tanh'):
+                  critic_sizes=(64, 64), critic_activation='tanh',
+                  observation_normalizer=None):
     return models.ActorCritic(
         actor=models.Actor(
             encoder=models.ObservationEncoder(),
@@ -15,7 +16,7 @@ def default_model(actor_sizes=(64, 64), actor_activation='tanh',
             encoder=models.ObservationEncoder(),
             torso=models.MLP(critic_sizes, critic_activation),
             head=models.ValueHead()),
-        observation_normalizer=normalizers.MeanStd())
+        observation_normalizer=observation_normalizer)
 
 
 class APO(agents.A2C):
@@ -38,7 +39,7 @@ class APO(agents.A2C):
             critic_updater=critic_updater)
 
     def initialize(self, observation_space, action_space, seed=None):
-        super().initialize(seed=seed)
+        super().initialize(observation_space, action_space, seed=seed)
         self.model.initialize(observation_space, action_space)
         self.replay.initialize(seed)
         self.actor_updater.initialize(self.model)
@@ -53,11 +54,11 @@ class APO(agents.A2C):
         values, next_values = self._evaluate(**batch)
         values, next_values = values.numpy(), next_values.numpy()
         
-        rewards = self.replay.get_full('rewards')
+        rewards = self.replay.get_full('rewards')['rewards']
         self.eta = (1 - self.alpha) * self.eta + self.alpha * rewards.mean()
         self.b = (1 - self.alpha) * self.b + self.alpha * values.mean()
 
-        self.replay.compute_returns(values, next_values)
+        self.replay.compute_returns(values, next_values, self.eta)
 
         train_actor = True
         actor_iterations = 0
