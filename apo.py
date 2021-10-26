@@ -85,6 +85,7 @@ class APO(agents.A2C):
 
         logger.store('actor/iterations', actor_iterations)
         logger.store('critic/iterations', critic_iterations)
+        logger.store('average_values', values.mean())
 
         # Update the normalizers.
         if self.model.observation_normalizer:
