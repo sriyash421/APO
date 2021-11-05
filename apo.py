@@ -31,6 +31,10 @@ class PPO(agents.PPO):
         super().__init__(
             model=model, replay=replay, actor_updater=actor_updater,
             critic_updater=critic_updater)
+    
+    @tf.function
+    def _test_step(self, observations):
+        return self.model.actor(observations).mean()
 
 class APO(agents.A2C):
     '''Average-Reward Reinforcement Learning with Trust Region Methods.
@@ -120,3 +124,7 @@ class APO(agents.A2C):
 
         critic_infos = self.critic_updater(observations, returns)
         return dict(actor=actor_infos, critic=critic_infos)
+    
+    @tf.function
+    def _test_step(self, observations):
+        return self.model.actor(observations).mean()
