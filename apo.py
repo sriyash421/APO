@@ -1,7 +1,7 @@
 import tensorflow as tf
 
-from tonic import logger
-from tonic.tensorflow import agents, updaters, models, normalizers
+from tonic import logger, replays
+from tonic.tensorflow import agents, updaters, models
 from segments import Segment
 
 def default_model(actor_sizes=(64, 64), actor_activation='tanh',
@@ -18,6 +18,19 @@ def default_model(actor_sizes=(64, 64), actor_activation='tanh',
             head=models.ValueHead()),
         observation_normalizer=observation_normalizer)
 
+class PPO(agents.PPO):
+    def __init__(
+        self, discount_factor=1.0, trace_decay=0.95
+    ):
+  
+        model = default_model()
+        replay = replays.Segment(discount_factor=discount_factor, batch_size=256, batch_iterations=10, trace_decay=trace_decay)
+        actor_updater = updaters.ClippedRatio(gradient_clip=10)
+        critic_updater = updaters.VRegression(gradient_clip=10)
+        
+        super().__init__(
+            model=model, replay=replay, actor_updater=actor_updater,
+            critic_updater=critic_updater)
 
 class APO(agents.A2C):
     '''Average-Reward Reinforcement Learning with Trust Region Methods.
@@ -25,12 +38,14 @@ class APO(agents.A2C):
     '''
 
     def __init__(
-        self, alpha=0.1, v=0.1, model=None, replay=None, actor_updater=None, critic_updater=None
+        self, alpha=0.1, v=0.1, trace_decay=0.95
     ):
-        actor_updater = actor_updater or updaters.ClippedRatio()
-        model = model or default_model()
-        replay = replay or Segment(discount_factor=1.0)
-        
+  
+        model = default_model()
+        replay = Segment(discount_factor=1.0, batch_size=256, batch_iterations=10, trace_decay=trace_decay)
+        actor_updater = updaters.ClippedRatio(gradient_clip=10)
+        critic_updater = updaters.VRegression(gradient_clip=10)
+
         self.alpha = alpha
         self.v = v
         
