@@ -16,7 +16,7 @@ do
                 --environment "tonic.environments.Gym('${env}')" \
                 --trainer "tonic.Trainer(test_episodes=10, epoch_steps=int(2e3), steps=int(3e6))" \
                 --seed $seed \
-                --name "${env}-Discount_${discount}-TraceDecay_${decay}-Seed_${seed}" &
+                --name "PPO-${env}-Discount_${discount}-TraceDecay_${decay}" &
             done
         done
     done

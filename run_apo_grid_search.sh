@@ -15,10 +15,10 @@ do
                     python3 -m tonic.train \
                     --header "import apo" \
                     --agent "apo.APO(alpha=${alpha}, v=${v}, trace_decay=${decay})" \
-                    --environment "tonic.environments.Gym('HalfCheetah-v2')" \
+                    --environment "tonic.environments.Gym('${env}')" \
                     --trainer "tonic.Trainer(test_episodes=10, epoch_steps=int(2e3), steps=int(3e6))" \
                     --seed $seed \
-                    --name "${env}-V_${v}-Alpha_${alpha}-TraceDecay_${decay}-Seed_${seed}" &
+                    --name "APO-${env}-V_${v}-Alpha_${alpha}-TraceDecay_${decay}" &
                 done
             done
         done
