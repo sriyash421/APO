@@ -120,7 +120,7 @@ class APO(agents.A2C):
             observations, actions, advantages, log_probs)
         
         # Average Value Constraint
-        returns = returns + self.v * self.b
+        returns = returns - self.v * self.b
 
         critic_infos = self.critic_updater(observations, returns)
         return dict(actor=actor_infos, critic=critic_infos)
