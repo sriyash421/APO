@@ -26,13 +26,13 @@ def main():
         seed = str(cfg['seed'])
         train_cmd = f"python -m tonic.train --header 'import apo' \
             --agent 'apo.APO(alpha={alpha}, v={v}, trace_decay={decay})' \
-            --environment 'tonic.environments.Gym(\'{env}\')' \
+            --environment 'tonic.environments.Gym(\"{env}\")' \
             --trainer 'tonic.Trainer(test_episodes=10, epoch_steps=int(2e3), steps=int(3e6))' \
             --seed {seed} \
             --name 'APO-v{v}-a{alpha}-t{decay}'"
         w_name = str(i) + '.sh'
         i = i+1
-        text_file = open(w_name, "w")
+        text_file = open("cfg_temp/"+w_name, "w")
         n = text_file.write(train_cmd)
         text_file.close()
         # jsonstr = json.dumps(config_struct)
@@ -56,7 +56,7 @@ def main():
             --name 'APO-d{discount_factor}-t{decay}'"
         w_name = str(i) + '.sh'
         i = i+1
-        text_file = open(w_name, "w")
+        text_file = open("cfg_temp/"+w_name, "w")
         n = text_file.write(train_cmd)
         text_file.close()
 
