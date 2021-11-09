@@ -50,7 +50,7 @@ def main():
         seed = str(cfg['seed'])
         train_cmd = f"python -m tonic.train --header 'import apo' \
             --agent 'apo.PPO(discount_factor={discount_factor}, trace_decay={decay})' \
-            --environment 'tonic.environments.Gym(\'{env}\')' \
+            --environment 'tonic.environments.Gym(\"{env}\")' \
             --trainer 'tonic.Trainer(test_episodes=10, epoch_steps=int(2e3), steps=int(3e6))' \
             --seed {seed} \
             --name 'APO-d{discount_factor}-t{decay}'"
